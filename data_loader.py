@@ -23,7 +23,7 @@ def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0
                 zh_lines = re.findall(r'<zh>(.*?)</zh>', data)
                 i=0
                 while i < len(ja_lines):
-                    if zh_line[i]=='':
+                    if zh_lines[i]=='':
                         i+=1
                         continue
                     ja_line = ja_lines[i].replace('\\n', '\n')
@@ -31,7 +31,7 @@ def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0
                     if len(ja_line) > max_length:
                         i+=1
                         continue
-                    while random.random() < prob and i+1<len(ja_lines) and zh_line[i+1]!='' and len(ja_line)+len(ja_lines[i+1])+1 <= max_length:
+                    while random.random() < prob and i+1<len(ja_lines) and zh_lines[i+1]!='' and len(ja_line)+len(ja_lines[i+1])+1 <= max_length:
                         i+=1
                         ja_line += '\n'+ja_lines[i].replace('\\n', '\n')
                         zh_line += '\n'+zh_lines[i].replace('\\n', '\n')

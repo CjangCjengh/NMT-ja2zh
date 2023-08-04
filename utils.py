@@ -4,26 +4,45 @@ import json
 
 
 def target_tokenizer_load():
-    with open('./data/vocab/zh_vocabs.json', 'r', encoding='utf-8') as f:
-        zh_vocabs = json.load(f)
-    vocab_to_id = {v:i+3 for i, v in enumerate(zh_vocabs)}
-    id_to_vocab = {v:k for k, v in vocab_to_id.items()}
-    def encode(text):
-        return [vocab_to_id.get(token, 4) for token in text]
-    def decode(ids):
-        return ''.join([id_to_vocab.get(i, '') for i in ids])
-    return encode, decode
+    return load_tokenizer('./data/vocab/zh_vocabs.json')
 
 
 def source_tokenizer_load():
-    with open('./data/vocab/ja_vocabs.json', 'r', encoding='utf-8') as f:
-        ja_vocabs = json.load(f)
-    vocab_to_id = {v:i+3 for i, v in enumerate(ja_vocabs)}
+    return load_tokenizer('./data/vocab/ja_vocabs.json')
+
+
+def load_tokenizer(vocab_path):
+    with open(vocab_path, 'r', encoding='utf-8') as f:
+        vocabs = json.load(f)
+    vocab_to_id = {v:i+259 for i, v in enumerate(vocabs)}
     id_to_vocab = {v:k for k, v in vocab_to_id.items()}
     def encode(text):
-        return [vocab_to_id.get(token, 4) for token in text]
+        token_list = []
+        for token in text:
+            if token in vocab_to_id:
+                token_list.append(vocab_to_id[token])
+            else:
+                for c in token.encode('utf-16 be'):
+                    token_list.append(c+3)
+        return token_list
     def decode(ids):
-        return ''.join([id_to_vocab.get(i, '') for i in ids])
+        text = ''
+        i = 0
+        while i < len(ids):
+            if ids[i] >= 259:
+                text += id_to_vocab[ids[i]]
+                i+=1
+            elif ids[i] > 2:
+                char = (ids[i]-3).to_bytes(1, 'big')
+                i+=1
+                while i < len(ids) and ids[i] > 2 and ids[i] < 259:
+                    char += (ids[i]-3).to_bytes(1, 'big')
+                    i+=1
+                try:
+                    text += char.decode('utf-16 be')
+                except:
+                    continue
+        return text
     return encode, decode
 
 
@@ -53,5 +72,3 @@ def set_logger(log_path):
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(logging.Formatter('%(message)s'))
         logger.addHandler(stream_handler)
-
-
