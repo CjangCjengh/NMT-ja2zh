@@ -1,0 +1,5 @@
+numpy
+sacrebleu==1.4.14
+scikit-learn
+torchvision
+tqdm
