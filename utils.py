@@ -42,6 +42,7 @@ def load_tokenizer(vocab_path):
                     text += char.decode('utf-16 be')
                 except:
                     continue
+            i+=1
         return text
     return encode, decode
 
