@@ -37,10 +37,15 @@ def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0
                         zh_line += '\n'+zh_lines[i].replace('\\n', '\n')
                     train_data.append([ja_line, zh_line])
                     i+=1
+
+    random.shuffle(train_data)
+    dev_data = train_data[-100:]
+    train_data = train_data[:-100]
+
     with open(train_data_path, 'w', encoding='utf-8') as f:
         json.dump(train_data, f, ensure_ascii=False)
     with open(dev_data_path, 'w', encoding='utf-8') as f:
-        json.dump(random.sample(train_data, 100), f, ensure_ascii=False)
+        json.dump(dev_data, f, ensure_ascii=False)
 
 
 def subsequent_mask(size):
