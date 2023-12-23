@@ -3,6 +3,7 @@ import json
 import numpy as np
 import os, re
 import random
+import glob
 from torch.autograd import Variable
 from torch.utils.data import Dataset
 from torch.nn.utils.rnn import pad_sequence
@@ -15,28 +16,28 @@ DEVICE = config.device
 
 def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0.85):
     train_data=[]
-    for file in os.listdir(xml_folder):
-        if file.endswith('.xml'):
-            with open(f'{xml_folder}/{file}', 'r', encoding='utf-8') as f:
-                data = f.read()
-                ja_lines = re.findall(r'<ja>(.*?)</ja>', data)
-                zh_lines = re.findall(r'<zh>(.*?)</zh>', data)
-                i=0
-                while i < len(ja_lines):
-                    if zh_lines[i]=='':
-                        i+=1
-                        continue
-                    ja_line = ja_lines[i].replace('\\n', '\n')
-                    zh_line = zh_lines[i].replace('\\n', '\n')
-                    if len(ja_line) > max_length:
-                        i+=1
-                        continue
-                    while random.random() < prob and i+1<len(ja_lines) and zh_lines[i+1]!='' and len(ja_line)+len(ja_lines[i+1])+1 <= max_length:
-                        i+=1
-                        ja_line += '\n'+ja_lines[i].replace('\\n', '\n')
-                        zh_line += '\n'+zh_lines[i].replace('\\n', '\n')
-                    train_data.append([ja_line, zh_line])
+    xml_files=glob.glob(f'{xml_folder}/**/*.xml', recursive=True)
+    for file in xml_files:
+        with open(file, 'r', encoding='utf-8') as f:
+            data = f.read()
+            src_lines = re.findall(r'<ja>(.*?)</ja>', data)
+            tgt_lines = re.findall(r'<zh>(.*?)</zh>', data)
+            i=0
+            while i < len(src_lines):
+                if tgt_lines[i]=='':
                     i+=1
+                    continue
+                src_line = src_lines[i].replace('\\n', '\n')
+                tgt_line = tgt_lines[i].replace('\\n', '\n')
+                if len(src_line) > max_length:
+                    i+=1
+                    continue
+                while random.random() < prob and i+1<len(src_lines) and tgt_lines[i+1]!='' and len(src_line)+len(src_lines[i+1])+1 <= max_length:
+                    i+=1
+                    src_line += '\n'+src_lines[i].replace('\\n', '\n')
+                    tgt_line += '\n'+tgt_lines[i].replace('\\n', '\n')
+                train_data.append([src_line, tgt_line])
+                i+=1
 
     random.shuffle(train_data)
     dev_data = train_data[-100:]
