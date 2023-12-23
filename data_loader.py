@@ -36,7 +36,7 @@ def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0
                     new_name = random.choice(to_replace[t])
                     src_line = src_line.replace(name[0], new_name[0])
                     tgt_line = tgt_line.replace(name[1], new_name[1])
-                    train_data.append([src_line, tgt_line])
+            train_data.append([src_line, tgt_line])
 
     random.shuffle(train_data)
     dev_data = train_data[-100:]
