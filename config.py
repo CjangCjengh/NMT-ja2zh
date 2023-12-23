@@ -27,6 +27,9 @@ use_smoothing = False
 # NoamOpt
 use_noamopt = True
 
+src_vocab_path = './data/vocab/ko_vocabs.json'
+tgt_vocab_path = './data/vocab/zh_vocabs.json'
+
 data_dir = './data'
 xml_folder = './data/text/xml'
 name_list_path = './data/text/name_list.json'

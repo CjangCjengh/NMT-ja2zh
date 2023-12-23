@@ -3,12 +3,12 @@ import logging
 import json
 
 
-def target_tokenizer_load():
-    return load_tokenizer('./data/vocab/zh_vocabs.json')
+def target_tokenizer_load(path):
+    return load_tokenizer(path)
 
 
-def source_tokenizer_load():
-    return load_tokenizer('./data/vocab/ja_vocabs.json')
+def source_tokenizer_load(path):
+    return load_tokenizer(path)
 
 
 def load_tokenizer(vocab_path):

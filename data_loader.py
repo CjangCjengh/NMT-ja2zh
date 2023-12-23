@@ -120,8 +120,8 @@ class Batch:
 class MTDataset(Dataset):
     def __init__(self, data_path):
         self.out_src_sent, self.out_tgt_sent = self.get_dataset(data_path, sort=True)
-        self.sp_src = source_tokenizer_load()[0]
-        self.sp_tgt = target_tokenizer_load()[0]
+        self.sp_src = source_tokenizer_load(config.src_vocab_path)[0]
+        self.sp_tgt = target_tokenizer_load(config.tgt_vocab_path)[0]
         self.PAD = 0
         self.BOS = 1
         self.EOS = 2
