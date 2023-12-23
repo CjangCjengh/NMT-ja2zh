@@ -53,7 +53,7 @@ def get_line_pairs(xml_files, max_length, prob=0.85):
     for file in xml_files:
         with open(file, 'r', encoding='utf-8') as f:
             data = f.read()
-            src_lines = re.findall(r'<ko>(.*?)</ko>', data)
+            src_lines = re.findall(r'<(?:ja|ko)>(.*?)</(?:ja|ko)>', data)
             tgt_lines = re.findall(r'<zh>(.*?)</zh>', data)
             i=0
             while i < len(src_lines):

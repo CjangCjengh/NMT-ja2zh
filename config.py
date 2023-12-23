@@ -10,7 +10,7 @@ dropout = 0.1
 padding_idx = 0
 bos_idx = 1
 eos_idx = 2
-src_vocab_size = 4165
+src_vocab_size = 6760
 tgt_vocab_size = 5759
 batch_size = 12
 epoch_num = 100
@@ -27,7 +27,7 @@ use_smoothing = False
 # NoamOpt
 use_noamopt = True
 
-src_vocab_path = './data/vocab/ko_vocabs.json'
+src_vocab_path = './data/vocab/src_vocabs.json'
 tgt_vocab_path = './data/vocab/zh_vocabs.json'
 
 data_dir = './data'
