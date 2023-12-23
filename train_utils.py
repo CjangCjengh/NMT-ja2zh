@@ -32,7 +32,9 @@ def train(model, model_par, criterion, optimizer):
     total_steps = 0
     for epoch in range(config.epoch_num):
         # 数据集构建
-        built_dataset(config.xml_folder, config.train_data_path, config.dev_data_path, config.max_len)
+        built_dataset(config.xml_folder, config.train_data_path, config.dev_data_path, config.max_len,
+                      xml_template_folder=config.xml_template_folder, name_list_path=config.name_list_path,
+                      name_folder=config.name_folder)
         train_dataset = MTDataset(config.train_data_path)
         dev_dataset = MTDataset(config.dev_data_path)
         train_data = DataLoader(train_dataset, shuffle=True, batch_size=config.batch_size,

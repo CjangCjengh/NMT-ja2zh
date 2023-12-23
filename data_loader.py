@@ -1,7 +1,7 @@
 import torch
 import json
 import numpy as np
-import os, re
+import re
 import random
 import glob
 from torch.autograd import Variable
@@ -14,13 +14,46 @@ import config
 DEVICE = config.device
 
 
-def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0.85):
-    train_data=[]
+def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0.85,
+                  xml_template_folder=None, name_list_path=None, name_folder=None):
     xml_files=glob.glob(f'{xml_folder}/**/*.xml', recursive=True)
+    train_data=get_line_pairs(xml_files, max_length, prob)
+
+    # xml template
+    if xml_template_folder and name_list_path and name_folder:
+        with open(name_list_path, 'r', encoding='utf-8') as f:
+            name_list = json.load(f)
+        name_types = ['m_j','m_nj','f_j','f_nj','l_j','l_nj']
+        to_replace = {}
+        for t in name_types:
+            with open(f'{name_folder}/{t}.json', 'r', encoding='utf-8') as f:
+                to_replace[t] = json.load(f)
+        xml_files=glob.glob(f'{xml_template_folder}/**/*.xml', recursive=True)
+        new_data=get_line_pairs(xml_files, max_length, prob)
+        for src_line, tgt_line in new_data:
+            for t in name_types:
+                for name in name_list[t]:
+                    new_name = random.choice(to_replace[t])
+                    src_line = src_line.replace(name[0], new_name[0])
+                    tgt_line = tgt_line.replace(name[1], new_name[1])
+                    train_data.append([src_line, tgt_line])
+
+    random.shuffle(train_data)
+    dev_data = train_data[-100:]
+    train_data = train_data[:-100]
+
+    with open(train_data_path, 'w', encoding='utf-8') as f:
+        json.dump(train_data, f, ensure_ascii=False)
+    with open(dev_data_path, 'w', encoding='utf-8') as f:
+        json.dump(dev_data, f, ensure_ascii=False)
+
+
+def get_line_pairs(xml_files, max_length, prob=0.85):
+    line_pairs=[]
     for file in xml_files:
         with open(file, 'r', encoding='utf-8') as f:
             data = f.read()
-            src_lines = re.findall(r'<ja>(.*?)</ja>', data)
+            src_lines = re.findall(r'<ko>(.*?)</ko>', data)
             tgt_lines = re.findall(r'<zh>(.*?)</zh>', data)
             i=0
             while i < len(src_lines):
@@ -36,17 +69,9 @@ def built_dataset(xml_folder, train_data_path, dev_data_path, max_length, prob=0
                     i+=1
                     src_line += '\n'+src_lines[i].replace('\\n', '\n')
                     tgt_line += '\n'+tgt_lines[i].replace('\\n', '\n')
-                train_data.append([src_line, tgt_line])
+                line_pairs.append([src_line, tgt_line])
                 i+=1
-
-    random.shuffle(train_data)
-    dev_data = train_data[-100:]
-    train_data = train_data[:-100]
-
-    with open(train_data_path, 'w', encoding='utf-8') as f:
-        json.dump(train_data, f, ensure_ascii=False)
-    with open(dev_data_path, 'w', encoding='utf-8') as f:
-        json.dump(dev_data, f, ensure_ascii=False)
+    return line_pairs
 
 
 def subsequent_mask(size):

@@ -10,16 +10,16 @@ dropout = 0.1
 padding_idx = 0
 bos_idx = 1
 eos_idx = 2
-src_vocab_size = 4459
+src_vocab_size = 4165
 tgt_vocab_size = 5759
-batch_size = 8
+batch_size = 12
 epoch_num = 100
 save_interval = 1000
 early_stop = 5
 lr = 3e-4
 
 # greed decode的最大句子长度
-max_len = 800
+max_len = 900
 # beam size for bleu
 beam_size = 3
 # Label Smoothing
@@ -29,6 +29,9 @@ use_noamopt = True
 
 data_dir = './data'
 xml_folder = './data/text/xml'
+name_list_path = './data/text/name_list.json'
+xml_template_folder = './data/text/xml_template'
+name_folder = './data/text/ko_name'
 train_data_path = './data/text/train.json'
 dev_data_path = './data/text/dev.json'
 test_data_path = './data/text/test.json'
